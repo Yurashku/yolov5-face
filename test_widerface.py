@@ -133,12 +133,8 @@ if __name__ == '__main__':
 
     # Load model
     device = select_device(opt.device)
-    model = attempt_load(opt.input, map_location=device)  # load FP32 model
+    model = attempt_load('/content/yolov5-face/yolov5s-face.pt', map_location=device)  # load FP32 model
     with torch.no_grad():
-        # testing dataset
-        testset_folder = '/content'
-
-
-        img0 = cv2.imread('/content/q0_11.jpg')  # BGR
+        img0 = cv2.imread(opt.input)  # BGR
         boxes = detect(model, img0)
         print(boxes)
