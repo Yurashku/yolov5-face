@@ -127,44 +127,18 @@ if __name__ == '__main__':
     parser.add_argument('--save_folder', default='./widerface_evaluate/widerface_txt/', type=str, help='Dir to save txt results')
     parser.add_argument('--dataset_folder', default='../WiderFace/val/images/', type=str, help='dataset path')
     parser.add_argument('--folder_pict', default='/yolov5-face/data/widerface/val/wider_val.txt', type=str, help='folder_pict')
+    parser.add_argument('--input', default='/content/input.jpg', help='input picture name')
     opt = parser.parse_args()
     print(opt)
 
-    # changhy : read folder_pict
-    pict_folder = {}
-    with open(opt.folder_pict, 'r') as f:
-        lines = f.readlines()
-        for line in lines:
-            line = line.strip().split('/')
-            pict_folder[line[-1]] = line[-2]
-
     # Load model
     device = select_device(opt.device)
-    model = attempt_load(opt.weights, map_location=device)  # load FP32 model
+    model = attempt_load(opt.input, map_location=device)  # load FP32 model
     with torch.no_grad():
         # testing dataset
-        testset_folder = opt.dataset_folder
+        testset_folder = '/content'
 
-        for image_path in tqdm(glob.glob(os.path.join(testset_folder, '*'))):
-            if image_path.endswith('.txt'):
-                continue
-            img0 = cv2.imread(image_path)  # BGR
-            if img0 is None:
-                print(f'ignore : {image_path}')
-                continue
-            boxes = detect(model, img0)
-            # --------------------------------------------------------------------
-            image_name = os.path.basename(image_path)
-            txt_name = os.path.splitext(image_name)[0] + ".txt"
-            save_name = os.path.join(opt.save_folder, pict_folder[image_name], txt_name)
-            dirname = os.path.dirname(save_name)
-            if not os.path.isdir(dirname):
-                os.makedirs(dirname)
-            with open(save_name, "w") as fd:
-                file_name = os.path.basename(save_name)[:-4] + "\n"            
-                bboxs_num = str(len(boxes)) + "\n"
-                fd.write(file_name)
-                fd.write(bboxs_num)
-                for box in boxes:
-                    fd.write('%d %d %d %d %.03f' % (box[0], box[1], box[2], box[3], box[4] if box[4] <= 1 else 1) + '\n')
-        print('done.')
+
+        img0 = cv2.imread('/content/q0_11.jpg')  # BGR
+        boxes = detect(model, img0)
+        print(boxes)
